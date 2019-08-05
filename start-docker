@@ -1,11 +1,7 @@
 #!/bin/bash
-
 TMP=$(docker run --rm -d -v /home/ubuntu/RL_folder:/notebooks -p 8888:8888 justheuristic/practical_rl /run_jupyter.sh)
 IP=$(curl http://checkip.amazonaws.com)
 # The script sleeps to ensure the docker image is finished with the startup such that the docker log is generated
 sleep 30
-mkdir LINK
 docker logs $TMP 2>&1 | grep -P "   .*\K:8888\/\?token=[a-zA-Z0-9]*$" | sed "s/^\(.*\)token=\(.*\)$/http:\/\/$IP:8888\/\?token=\2/" > LINK/"$IP".txt
-
 aws s3 sync LINK s3://rl-workshop-bucket/RL-WS-links
-
