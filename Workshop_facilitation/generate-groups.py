@@ -11,6 +11,7 @@ import pandas as pd
 TMP_FOLDER = 'LINK_TEMP'
 IP_DICT_JSON_NAME = 'active_ips.json'
 GROUP_DICT_NAME = 'groups.json'
+GROUP_EXCEL_NAME = 'Groups.xlsx'
 
 
 def bucket_exists(bucket_name):
@@ -186,6 +187,13 @@ def generate_excel():
     print('Excel generated and saved')
 
 
+def clean_up():
+    shutil.rmtree(TMP_FOLDER)
+    os.remove(IP_DICT_JSON_NAME)
+    os.remove(GROUP_DICT_NAME)
+    os.remove(GROUP_EXCEL_NAME)
+
+
 if __name__ == '__main__':
 
     # Assign this value before running the program
@@ -194,28 +202,31 @@ if __name__ == '__main__':
 
     # input arguments
     parser = argparse.ArgumentParser(description= 'Allocate running EC2 instances of RL-WS-image into groups')
-    parser.add_argument('-i', '--init', required=True,
+    parser.add_argument('-i', '--init', type=bool,
                         help='Set this to yes or no wheter you are creating the groups for the first time or updating')
+    parser.add_argument('-c', '--clean', type=bool,
+                        help='Enable this if you want to clean the entire group setting')
     args = vars(parser.parse_args())
+
+    if args['clean']:
+        clean_up()
+        exit(0)
 
     test_connection(BUCKET_NAME)
 
     # Run script for fucntions
-    # ip_org_dict = {'i-0345dc555876e6985': '54.174.112.245', 'i-0116da57317bfa93c': '3.87.192.207', 'i-0a2eb4c7cc444b410': '52.23.168.91'}
-    # ip_new_dict = {'i-0345dc555876e6985': '54.174.112.245', 'i-0a2eb4c7cc444b410': '52.23.168.91'}
-    # ip_replaced_dict = {'i-0116da57317bfa93c': '3.87.192.207', 'i-0116daas317bfa93c': '9.87.192.207', 'i-0a2eb4c7cc444b410': '52.23.168.91', 'i-0116da57317bfa93c': '3.87.192.207'}
 
-    if args['init'] == 'yes':
+    if args['init']:
         download_files(BUCKET_NAME, LINK_FOLDER)
         allocate_new_groups()
         generate_excel()
 
-    elif args['init'] == 'no':
-        download_files(BUCKET_NAME, LINK_FOLDER)
-        update_and_allocate_instances()
-
-    else:
-        print('Invalid argument')
+    # ip_org_dict = {'i-0345dc555876e6985': '54.174.112.245', 'i-0116da57317bfa93c': '3.87.192.207', 'i-0a2eb4c7cc444b410': '52.23.168.91'}
+    # ip_new_dict = {'i-0345dc555876e6985': '54.174.112.245', 'i-0a2eb4c7cc444b410': '52.23.168.91'}
+    # ip_replaced_dict = {'i-0116da57317bfa93c': '3.87.192.207', 'i-0116daas317bfa93c': '9.87.192.207', 'i-0a2eb4c7cc444b410': '52.23.168.91', 'i-0116da57317bfa93c': '3.87.192.207'}
+    # elif args['update']:
+    #     download_files(BUCKET_NAME, LINK_FOLDER)
+    #     update_and_allocate_instances()
 
 
 
