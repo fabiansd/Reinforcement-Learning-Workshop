@@ -12,6 +12,7 @@ TMP_FOLDER = 'LINK_TEMP'
 IP_DICT_JSON_NAME = 'active_ips.json'
 GROUP_DICT_NAME = 'groups.json'
 GROUP_EXCEL_NAME = 'Groups.xlsx'
+AMI_ID = 'ami-060e29600c7769bc0'
 
 
 def bucket_exists(bucket_name):
@@ -49,7 +50,7 @@ def list_ec2():
     for reservation in response["Reservations"]:
         for instance in reservation["Instances"]:
 
-            if instance['ImageId'] == 'ami-0573a1368e8959b03' \
+            if instance['ImageId'] == AMI_ID \
                     and instance['State']['Name'] == 'running':
 
                 running_ws_ips[instance['InstanceId']] = \
@@ -188,10 +189,14 @@ def generate_excel():
 
 
 def clean_up():
-    shutil.rmtree(TMP_FOLDER)
-    os.remove(IP_DICT_JSON_NAME)
-    os.remove(GROUP_DICT_NAME)
-    os.remove(GROUP_EXCEL_NAME)
+    if Path(TMP_FOLDER).exists():
+        shutil.rmtree(TMP_FOLDER)
+    if Path(IP_DICT_JSON_NAME).exists():
+        os.remove(IP_DICT_JSON_NAME)
+    if Path(GROUP_DICT_NAME).exists():
+        os.remove(GROUP_DICT_NAME)
+    if Path(GROUP_EXCEL_NAME).exists():
+        os.remove(GROUP_EXCEL_NAME)
 
 
 if __name__ == '__main__':
@@ -210,13 +215,10 @@ if __name__ == '__main__':
 
     if args['clean']:
         clean_up()
-        exit(0)
-
-    test_connection(BUCKET_NAME)
-
-    # Run script for fucntions
+        print('CLEANED UP')
 
     if args['init']:
+        test_connection(BUCKET_NAME)
         download_files(BUCKET_NAME, LINK_FOLDER)
         allocate_new_groups()
         generate_excel()
