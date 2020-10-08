@@ -4,4 +4,4 @@ IP=$(curl http://checkip.amazonaws.com)
 # The script sleeps to ensure the docker image is finished with the startup such that the docker log is generated
 sleep 30
 sudo docker logs $TMP 2>&1 | grep -P "   .*\K:8888\/\?token=[a-zA-Z0-9]*$" | sudo sed "s/^\(.*\)token=\(.*\)$/http:\/\/$IP:8888\/\?token=\2/" > /home/ubuntu/RL_folder/LINK/"$IP".txt
-aws s3 sync /home/ubuntu/RL_folder/LINK s3://rl-workshop-bucket/RL-WS-links
+aws s3 sync /home/ubuntu/RL_folder/LINK s3://rl-ws-eirik-fabian/RL-WS-links
