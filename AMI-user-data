@@ -18,7 +18,7 @@ Content-Transfer-Encoding: 7bit
 Content-Disposition: attachment; filename="userdata.txt"
 
 #!/bin/bash
-cd /home/ubuntu/RL_folder/Reinforcement-Learning-Workshop
-sudo git pull
+cd /home/ubuntu/RL_folder/
+sudo git clone git@github.com:fabiansd/Reinforcement-Learning-Workshop.git
 sudo /home/ubuntu/RL_folder/Reinforcement-Learning-Workshop/start-docker
 --//
